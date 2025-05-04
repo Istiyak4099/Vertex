@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: gemini-chatbot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app -b 0.0.0.0:$PORT
+    envVars:
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_API_KEY
+        sync: false
+    plan: free
