@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block title %}Vertex - AI-Powered Business Assistant{% endblock %}
+
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- Welcome Banner -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">Welcome to Vertex</h2>
+                            <p class="mb-4">Your AI-powered business assistant platform for automated customer messaging across social media.</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="/chat" class="btn btn-primary btn-icon">
+                                    <i class="bi bi-chat-dots"></i> Start Chatting
+                                </a>
+                                <a href="/connect" class="btn btn-secondary btn-icon">
+                                    <i class="bi bi-link-45deg"></i> Connect Pages
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-none d-md-block text-end">
+                            <div style="font-size: 6rem; background: var(--bot-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded p-2 me-3" style="background-color: rgba(124, 77, 255, 0.1);">
+                            <i class="bi bi-chat-dots text-primary" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h6 class="mb-0">Total Chats</h6>
+                    </div>
+                    <h3 class="mb-0">0</h3>
+                    <p class="small">Start chatting to see data</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded p-2 me-3" style="background-color: rgba(24, 119, 242, 0.1);">
+                            <i class="bi bi-facebook text-primary" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h6 class="mb-0">Connected Pages</h6>
+                    </div>
+                    <h3 class="mb-0">0</h3>
+                    <p class="small">Connect your business pages</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded p-2 me-3" style="background-color: rgba(59, 130, 246, 0.1);">
+                            <i class="bi bi-envelope text-info" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h6 class="mb-0">Auto Responses</h6>
+                    </div>
+                    <h3 class="mb-0">0</h3>
+                    <p class="small">Messages handled by AI</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded p-2 me-3" style="background-color: rgba(245, 158, 11, 0.1);">
+                            <i class="bi bi-speedometer2 text-warning" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h6 class="mb-0">Current Plan</h6>
+                    </div>
+                    <h3 class="mb-0">Free</h3>
+                    <a href="/pricing" class="text-primary small">Upgrade for more features</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Access -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">Quick Access</h5>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 text-center">
+                    <div class="rounded-circle p-3 mb-3" style="background-color: rgba(124, 77, 255, 0.1);">
+                        <i class="bi bi-chat-dots text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>AI Chat Assistant</h5>
+                    <p>Start a conversation with our AI assistant</p>
+                    <a href="/chat" class="btn btn-primary mt-auto">Chat Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 text-center">
+                    <div class="rounded-circle p-3 mb-3" style="background-color: rgba(24, 119, 242, 0.1);">
+                        <i class="bi bi-facebook text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Connect Social Media</h5>
+                    <p>Integrate your social media business pages</p>
+                    <a href="/connect" class="btn btn-success mt-auto">Connect</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 text-center">
+                    <div class="rounded-circle p-3 mb-3" style="background-color: rgba(245, 158, 11, 0.1);">
+                        <i class="bi bi-tag text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Subscription Plans</h5>
+                    <p>Explore our various subscription plans</p>
+                    <a href="/pricing" class="btn btn-warning mt-auto">View Plans</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Getting Started -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Getting Started</h5>
+                    <a href="/help" class="text-primary">View all guides</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="/help#chat" class="list-group-item list-group-item-action d-flex align-items-center p-3 bg-transparent">
+                            <div class="rounded-circle p-2 me-3 text-primary" style="background-color: rgba(124, 77, 255, 0.1);">
+                                <i class="bi bi-1-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Start a conversation with Vertex AI</h6>
+                                <p class="small mb-0">Learn how to chat with our AI assistant</p>
+                            </div>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                        <a href="/help#connect" class="list-group-item list-group-item-action d-flex align-items-center p-3 bg-transparent">
+                            <div class="rounded-circle p-2 me-3 text-success" style="background-color: rgba(16, 185, 129, 0.1);">
+                                <i class="bi bi-2-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Connect your social media business pages</h6>
+                                <p class="small mb-0">Setup integration with Facebook, Instagram, etc.</p>
+                            </div>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                        <a href="/help#automation" class="list-group-item list-group-item-action d-flex align-items-center p-3 bg-transparent">
+                            <div class="rounded-circle p-2 me-3 text-info" style="background-color: rgba(59, 130, 246, 0.1);">
+                                <i class="bi bi-3-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Set up automated responses</h6>
+                                <p class="small mb-0">Configure AI to respond to customer messages</p>
+                            </div>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                        <a href="/help#upgrade" class="list-group-item list-group-item-action d-flex align-items-center p-3 bg-transparent">
+                            <div class="rounded-circle p-2 me-3 text-warning" style="background-color: rgba(245, 158, 11, 0.1);">
+                                <i class="bi bi-4-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Upgrade your plan</h6>
+                                <p class="small mb-0">Learn about our premium features and plans</p>
+                            </div>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if this is the first visit (using localStorage)
+        const hasVisitedBefore = localStorage.getItem('hasVisitedHome');
+        
+        // Define the tour steps
+        const welcomeTour = introJs();
+        
+        // Custom animation for tooltip
+        const customAnimation = document.createElement('style');
+        customAnimation.textContent = `
+            .introjs-tooltip {
+                animation: pulse 1s infinite alternate;
+                box-shadow: 0 5px 20px rgba(105, 48, 195, 0.4);
+                border-radius: 16px;
+            }
+            
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                100% {
+                    transform: scale(1.02);
+                }
+            }
+            
+            .introjs-helperLayer {
+                border-radius: 8px;
+                box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5), 0 0 0 5px rgba(124, 77, 255, 0.5) !important;
+            }
+            
+            .introjs-tooltipbuttons {
+                display: flex;
+                gap: 8px;
+            }
+            
+            .introjs-button {
+                border-radius: 8px;
+                padding: 8px 16px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            
+            .introjs-button:hover {
+                transform: translateY(-2px);
+            }
+            
+            .introjs-prevbutton {
+                color: var(--text-color);
+                background-color: rgba(124, 77, 255, 0.1);
+            }
+            
+            .introjs-nextbutton {
+                background: var(--bot-gradient);
+                color: white !important;
+                text-shadow: none;
+                box-shadow: 0 4px 10px rgba(105, 48, 195, 0.3);
+            }
+            
+            .introjs-skipbutton {
+                color: var(--text-color);
+                opacity: 0.7;
+                transition: opacity 0.3s ease;
+            }
+            
+            .introjs-skipbutton:hover {
+                opacity: 1;
+                color: var(--primary-color);
+            }
+        `;
+        document.head.appendChild(customAnimation);
+        
+        // Add data-intro and data-step attributes to elements
+        document.querySelector('.sidebar-brand').setAttribute('data-intro', 'Welcome to Vertex! Your AI business assistant platform. Let\'s take a quick tour to get you started.');
+        document.querySelector('.sidebar-brand').setAttribute('data-step', '1');
+        
+        document.querySelector('a[href="/chat"].nav-link').setAttribute('data-intro', 'Start conversations with our AI assistant to get help with customer service, content creation, and more.');
+        document.querySelector('a[href="/chat"].nav-link').setAttribute('data-step', '2');
+        
+        document.querySelector('a[href="/connect"].nav-link').setAttribute('data-intro', 'Connect your business social media accounts to automate responses to customer messages.');
+        document.querySelector('a[href="/connect"].nav-link').setAttribute('data-step', '3');
+        
+        // Find the stats card
+        const statsCard = document.querySelector('.col-md-6.col-lg-3 .card');
+        if (statsCard) {
+            statsCard.setAttribute('data-intro', 'Track your stats and see how Vertex is helping your business engage with customers.');
+            statsCard.setAttribute('data-step', '4');
+        }
+        
+        // Find the cards in the Quick Access section
+        const quickAccessCards = document.querySelectorAll('.row.mb-4 .col-md-6.col-lg-4 .card');
+        if (quickAccessCards.length > 0) {
+            quickAccessCards[0].setAttribute('data-intro', 'Quick access to all the most important features of Vertex.');
+            quickAccessCards[0].setAttribute('data-step', '5');
+        }
+        
+        // Configure the tour
+        welcomeTour.setOptions({
+            steps: [
+                {
+                    element: document.querySelector('.sidebar-brand'),
+                    intro: 'Welcome to Vertex! Your AI business assistant platform. Let\'s take a quick tour to get you started.'
+                },
+                {
+                    element: document.querySelector('a[href="/chat"].nav-link'),
+                    intro: 'Start conversations with our AI assistant to get help with customer service, content creation, and more.'
+                },
+                {
+                    element: document.querySelector('a[href="/connect"].nav-link'),
+                    intro: 'Connect your business social media accounts to automate responses to customer messages.'
+                },
+                {
+                    element: statsCard,
+                    intro: 'Track your stats and see how Vertex is helping your business engage with customers.'
+                },
+                {
+                    element: quickAccessCards[0],
+                    intro: 'Quick access to all the most important features of Vertex.'
+                },
+                {
+                    element: document.querySelector('.getting-started') || document.querySelector('.row:last-child'),
+                    intro: 'Follow our getting started guide to make the most of Vertex. Let\'s begin your AI journey!'
+                }
+            ],
+            showBullets: true,
+            showProgress: true,
+            overlayOpacity: 0.7,
+            scrollToElement: true,
+            doneLabel: 'Get Started',
+            tooltipClass: 'vertex-tour-tooltip',
+            highlightClass: 'vertex-tour-highlight',
+            exitOnOverlayClick: false,
+            disableInteraction: false
+        });
+        
+        // Start the tour if it's the first visit
+        if (!hasVisitedBefore) {
+            setTimeout(() => {
+                welcomeTour.start();
+                localStorage.setItem('hasVisitedHome', 'true');
+            }, 1000);
+        }
+        
+        // "Take the tour" button in the card
+        const addTourButton = function() {
+            // Add a button to the first panel to restart the tour
+            const firstCard = document.querySelector('.col-md-8');
+            if (firstCard) {
+                const tourBtn = document.createElement('button');
+                tourBtn.className = 'btn btn-outline-primary btn-sm ms-2';
+                tourBtn.innerHTML = '<i class="bi bi-info-circle me-1"></i> Take the Tour';
+                tourBtn.onclick = function() {
+                    welcomeTour.start();
+                }
+                
+                // Insert after the first button
+                const btnContainer = firstCard.querySelector('.d-flex.flex-wrap.gap-2');
+                if (btnContainer) {
+                    btnContainer.appendChild(tourBtn);
+                }
+            }
+        }
+        
+        addTourButton();
+    });
+</script>
+{% endblock %}
