@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Model Comparison - Vertex{% endblock %}
+
+{% block head %}
+<style>
+    .model-card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .model-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .model-info {
+        padding: 1.25rem;
+    }
+    
+    .model-select-checkbox {
+        cursor: pointer;
+    }
+    
+    .model-header {
+        border-radius: 12px 12px 0 0;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .model-header.flash {
+        background: linear-gradient(135deg, rgba(13, 202, 240, 0.2), rgba(13, 110, 253, 0.1));
+    }
+    
+    .model-header.pro {
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.2), rgba(105, 48, 195, 0.1));
+    }
+    
+    .model-header.ultra {
+        background: linear-gradient(135deg, rgba(111, 66, 193, 0.2), rgba(81, 39, 160, 0.1));
+    }
+    
+    .model-header.vision {
+        background: linear-gradient(135deg, rgba(25, 135, 84, 0.2), rgba(13, 202, 240, 0.1));
+    }
+    
+    .model-header.palm {
+        background: linear-gradient(135deg, rgba(248, 249, 250, 0.2), rgba(173, 181, 189, 0.1));
+    }
+    
+    .model-badge {
+        border-radius: 20px;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .model-badge-flash {
+        background-color: rgba(13, 202, 240, 0.2);
+        color: #0dcaf0;
+    }
+    
+    .model-badge-pro {
+        background-color: rgba(124, 77, 255, 0.2);
+        color: #7C4DFF;
+    }
+    
+    .model-badge-ultra {
+        background-color: rgba(111, 66, 193, 0.2);
+        color: #6F42C1;
+    }
+    
+    .model-badge-palm {
+        background-color: rgba(173, 181, 189, 0.2);
+        color: #ADB5BD;
+    }
+    
+    .model-badge-vision {
+        background-color: rgba(25, 135, 84, 0.2);
+        color: #198754;
+    }
+    
+    .model-strengths {
+        margin-top: 1rem;
+        font-style: italic;
+    }
+    
+    .model-token-limit {
+        display: inline-block;
+        margin-top: 0.75rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+    }
+    
+    .model-response-container {
+        border-radius: 12px;
+        margin-top: 1.5rem;
+        overflow: hidden;
+        display: none;
+    }
+    
+    .model-response-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .model-response-body {
+        padding: 1rem;
+        white-space: pre-wrap;
+    }
+    
+    .model-section-heading {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .model-section-heading i {
+        margin-right: 0.5rem;
+        font-size: 1.25rem;
+    }
+    
+    .comparison-prompt-section {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .comparison-results-section {
+        display: none;
+    }
+    
+    .model-response-time {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-left: 0.5rem;
+    }
+    
+    .model-filter-buttons {
+        margin-bottom: 1.5rem;
+    }
+    
+    .model-filter-btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+    }
+    
+    .model-availability-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+    
+    /* Loading animation */
+    .loading-comparison {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(124, 77, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Response comparison styles */
+    .response-comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+        .response-comparison-grid.grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .response-comparison-grid.grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .response-comparison-grid.grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (min-width: 1200px) {
+        .response-comparison-grid.grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page intro -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">AI Model Comparison</h4>
+            <p class="text-muted">Compare responses from different AI models to find the best one for your needs.</p>
+        </div>
+    </div>
+    
+    <!-- Comparison prompt section -->
+    <div class="comparison-prompt-section">
+        <div class="model-section-heading">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <h5 class="mb-0">Test Different Models</h5>
+        </div>
+        
+        <form id="compareForm">
+            <div class="mb-3">
+                <label for="promptInput" class="form-label">Enter a prompt to test</label>
+                <textarea id="promptInput" class="form-control" rows="3" 
+                          placeholder="Enter a prompt to test across different AI models. For example: 'Explain quantum computing in simple terms' or 'Write a short poem about technology'"></textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Select models to compare</label>
+                <div class="model-filter-buttons mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary model-filter-btn" data-filter="all">All Models</button>
+                    <button type="button" class="btn btn-sm btn-outline-info model-filter-btn" data-filter="flash">Flash Models</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary model-filter-btn" data-filter="pro">Pro Models</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary model-filter-btn" data-filter="available">Available Models</button>
+                </div>
+                
+                <div class="row model-selection">
+                    {% for model_id, model in models.items() %}
+                    <div class="col-md-6 col-lg-4 mb-3 model-item {{ 'flash' if 'flash' in model_id else 'pro' if 'pro' in model_id else 'ultra' if 'ultra' in model_id else 'vision' if 'vision' in model_id else 'palm' }} {{ 'available' if model.available else '' }}">
+                        <div class="card model-selection-card h-100">
+                            <div class="card-body">
+                                <div class="form-check d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <input class="form-check-input model-select-checkbox" type="checkbox" value="{{ model_id }}" id="model_{{ loop.index }}" 
+                                               {{ 'checked' if model.available and loop.index <= 2 else '' }}
+                                               {{ 'disabled' if not model.available else '' }}>
+                                        <label class="form-check-label" for="model_{{ loop.index }}">
+                                            <strong>{{ model.name }}</strong><br>
+                                            <span class="text-muted small">{{ model.description|truncate(60) }}</span>
+                                        </label>
+                                    </div>
+                                    <span class="badge {{ 'model-badge-flash' if 'flash' in model_id else 'model-badge-pro' if 'pro' in model_id else 'model-badge-ultra' if 'ultra' in model_id else 'model-badge-vision' if 'vision' in model_id else 'model-badge-palm' }}">
+                                        {{ model.version }}
+                                    </span>
+                                </div>
+                                {% if not model.available %}
+                                <div class="badge bg-secondary model-availability-badge">Not Available</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-primary" id="compareBtn">
+                    <i class="bi bi-lightning-charge"></i> Compare Models
+                </button>
+                
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="showMetricsCheck" checked>
+                    <label class="form-check-label" for="showMetricsCheck">
+                        Show performance metrics
+                    </label>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Loading animation -->
+    <div class="loading-comparison" id="loadingComparison">
+        <div class="loading-spinner mb-3"></div>
+        <p>Generating responses from multiple models...</p>
+    </div>
+    
+    <!-- Comparison results section -->
+    <div class="comparison-results-section" id="comparisonResults">
+        <div class="model-section-heading">
+            <i class="bi bi-bar-chart-fill"></i>
+            <h5 class="mb-0">Model Comparison Results</h5>
+        </div>
+        
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            Pro Tip: Compare responses across different models to see which best suits your needs. Model strengths vary by task!
+        </div>
+        
+        <div class="response-comparison-grid" id="responseGrid">
+            <!-- Model responses will be added here dynamically -->
+        </div>
+    </div>
+    
+    <!-- Available Models Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="model-section-heading">
+                <i class="bi bi-cpu-fill"></i>
+                <h5 class="mb-0">Available Models</h5>
+            </div>
+            
+            <div class="row">
+                {% for model_id, model in models.items() %}
+                {% if model.available %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card model-card">
+                        <div class="model-header {{ 'flash' if 'flash' in model_id else 'pro' if 'pro' in model_id else 'ultra' if 'ultra' in model_id else 'vision' if 'vision' in model_id else 'palm' }}">
+                            <h5 class="card-title mb-0">{{ model.name }}</h5>
+                            <span class="badge {{ 'model-badge-flash' if 'flash' in model_id else 'model-badge-pro' if 'pro' in model_id else 'model-badge-ultra' if 'ultra' in model_id else 'model-badge-vision' if 'vision' in model_id else 'model-badge-palm' }}">
+                                v{{ model.version }}
+                            </span>
+                        </div>
+                        <div class="model-info">
+                            <p class="card-text">{{ model.description }}</p>
+                            <div class="model-strengths">
+                                <strong>Strengths:</strong> {{ model.strengths }}
+                            </div>
+                            <div class="mt-2">
+                                <strong>Best for:</strong> {{ model.best_for }}
+                            </div>
+                            <span class="model-token-limit">
+                                <i class="bi bi-braces"></i> {{ model.token_limit }} tokens
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const compareForm = document.getElementById('compareForm');
+        const promptInput = document.getElementById('promptInput');
+        const compareBtn = document.getElementById('compareBtn');
+        const loadingComparison = document.getElementById('loadingComparison');
+        const comparisonResults = document.getElementById('comparisonResults');
+        const responseGrid = document.getElementById('responseGrid');
+        const showMetricsCheck = document.getElementById('showMetricsCheck');
+        const modelFilterBtns = document.querySelectorAll('.model-filter-btn');
+        const modelItems = document.querySelectorAll('.model-item');
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Filter models
+        modelFilterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+                
+                // Remove active class from all buttons
+                modelFilterBtns.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Filter model items
+                modelItems.forEach(item => {
+                    if (filter === 'all') {
+                        item.style.display = 'block';
+                    } else if (filter === 'available') {
+                        item.style.display = item.classList.contains('available') ? 'block' : 'none';
+                    } else {
+                        item.style.display = item.classList.contains(filter) ? 'block' : 'none';
+                    }
+                });
+            });
+        });
+        
+        // Compare models form submission
+        if (compareForm) {
+            compareForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const prompt = promptInput.value.trim();
+                if (!prompt) {
+                    alert('Please enter a prompt to test');
+                    return;
+                }
+                
+                // Get selected models
+                const selectedModels = [];
+                document.querySelectorAll('.model-select-checkbox:checked').forEach(checkbox => {
+                    selectedModels.push(checkbox.value);
+                });
+                
+                if (selectedModels.length === 0) {
+                    alert('Please select at least one model to compare');
+                    return;
+                }
+                
+                // Show loading
+                loadingComparison.style.display = 'block';
+                comparisonResults.style.display = 'none';
+                compareBtn.disabled = true;
+                
+                // Set grid class based on number of selected models
+                if (selectedModels.length <= 4) {
+                    responseGrid.className = `response-comparison-grid grid-${selectedModels.length}`;
+                } else {
+                    responseGrid.className = 'response-comparison-grid grid-4';
+                }
+                
+                // Make API request
+                fetch('/api/models/compare', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        models: selectedModels
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading
+                    loadingComparison.style.display = 'none';
+                    comparisonResults.style.display = 'block';
+                    compareBtn.disabled = false;
+                    
+                    // Clear previous results
+                    responseGrid.innerHTML = '';
+                    
+                    if (data.error) {
+                        alert('Error comparing models: ' + data.error);
+                        return;
+                    }
+                    
+                    // Get all model info for display
+                    const modelInfo = {};
+                    document.querySelectorAll('.model-select-checkbox').forEach(checkbox => {
+                        const modelId = checkbox.value;
+                        const modelLabel = checkbox.nextElementSibling.querySelector('strong').textContent;
+                        modelInfo[modelId] = modelLabel;
+                    });
+                    
+                    // Display responses
+                    for (const modelId in data.responses) {
+                        const response = data.responses[modelId];
+                        const generationTime = data.generation_times[modelId];
+                        const modelName = modelInfo[modelId] || modelId;
+                        
+                        const showMetrics = showMetricsCheck.checked;
+                        
+                        // Create model response card
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card model-response-container';
+                        cardDiv.style.display = 'block';
+                        
+                        // Determine card header class
+                        let headerClass = 'model-response-header';
+                        if (modelId.includes('flash')) headerClass += ' flash';
+                        else if (modelId.includes('pro')) headerClass += ' pro';
+                        else if (modelId.includes('ultra')) headerClass += ' ultra';
+                        else if (modelId.includes('vision')) headerClass += ' vision';
+                        else headerClass += ' palm';
+                        
+                        cardDiv.innerHTML = `
+                            <div class="${headerClass}">
+                                <h6 class="mb-0">${modelName}</h6>
+                                ${showMetrics ? `<span class="model-response-time"><i class="bi bi-clock"></i> ${generationTime}s</span>` : ''}
+                            </div>
+                            <div class="model-response-body">
+                                ${response}
+                            </div>
+                        `;
+                        
+                        responseGrid.appendChild(cardDiv);
+                    }
+                })
+                .catch(error => {
+                    loadingComparison.style.display = 'none';
+                    compareBtn.disabled = false;
+                    alert('Error: ' + error);
+                });
+            });
+        }
+        
+        // Handle show metrics checkbox
+        showMetricsCheck.addEventListener('change', function() {
+            const metricTimes = document.querySelectorAll('.model-response-time');
+            metricTimes.forEach(el => {
+                el.style.display = this.checked ? 'inline-block' : 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}
