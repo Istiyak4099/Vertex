@@ -1,0 +1,1044 @@
+{% extends "base.html" %}
+
+{% block title %}Code Snippets - Vertex{% endblock %}
+
+{% block header_title %}Code Snippets Library{% endblock %}
+
+{% block additional_styles %}
+.snippet-card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.snippet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.snippet-card .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.snippet-description {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.snippet-preview {
+    background-color: rgba(124, 77, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    overflow: hidden;
+    position: relative;
+    max-height: 200px;
+}
+
+.snippet-preview:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(transparent, var(--card-bg));
+}
+
+.search-filters {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.tag-badge {
+    background-color: rgba(124, 77, 255, 0.1);
+    color: var(--primary-color);
+    font-weight: 500;
+    border-radius: 16px;
+    padding: 0.25rem 0.75rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tag-badge:hover {
+    background-color: rgba(124, 77, 255, 0.2);
+}
+
+.language-badge {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+}
+
+.snippet-actions {
+    margin-top: auto;
+}
+
+.no-snippets {
+    text-align: center;
+    padding: 3rem;
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    border: 2px dashed rgba(124, 77, 255, 0.2);
+}
+
+.no-snippets i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    opacity: 0.5;
+    margin-bottom: 1rem;
+}
+
+.snippet-meta {
+    font-size: 0.85rem;
+    color: var(--muted-text);
+    margin-bottom: 0.5rem;
+}
+
+.generate-prompt {
+    background-color: rgba(124, 77, 255, 0.03);
+    border: 1px solid rgba(124, 77, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.language-filter {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.language-filter.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.language-filter:hover:not(.active) {
+    background-color: rgba(124, 77, 255, 0.1);
+}
+
+/* Context awareness styles */
+.context-panel {
+    background-color: rgba(124, 77, 255, 0.03);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(124, 77, 255, 0.1);
+}
+
+.related-snippet-badge {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    cursor: default;
+}
+
+.related-snippet-badge .btn-close {
+    font-size: 0.6rem;
+    opacity: 0.6;
+}
+
+.related-snippet-badge .btn-close:hover {
+    opacity: 1;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.quick-template {
+    transition: all 0.2s ease;
+    border-color: var(--border-color);
+}
+
+.quick-template:hover {
+    background-color: rgba(124, 77, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+/* Recommendation styles */
+.recommendation-card {
+    border: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.recommendation-item {
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.recommendation-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-item .card-header {
+    background-color: rgba(124, 77, 255, 0.04);
+    border-bottom: 1px solid rgba(124, 77, 255, 0.1);
+    padding: 0.75rem 1rem;
+}
+
+.recommendation-reason .badge {
+    font-size: 0.7rem;
+    padding: 0.35em 0.65em;
+    font-weight: 500;
+}
+
+.badge.bg-info {
+    background-color: rgba(13, 202, 240, 0.2) !important;
+    color: #0dcaf0;
+}
+
+.badge.bg-primary {
+    background-color: rgba(124, 77, 255, 0.2) !important;
+    color: var(--primary-color);
+}
+
+.badge.bg-success {
+    background-color: rgba(25, 135, 84, 0.2) !important;
+    color: #198754;
+}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page intro -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">AI-Powered Code Snippet Library</h4>
+                <a href="{{ url_for('new_snippet') }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> New Snippet
+                </a>
+            </div>
+            <p class="text-muted">Create, store, and search for code snippets. Use AI to generate code based on your requirements.</p>
+        </div>
+    </div>
+    
+    <!-- Personalized Recommendations Section -->
+    {% if recommended_snippets %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card recommendation-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-stars me-2"></i> Recommended For You
+                        </h5>
+                        <button class="btn btn-sm btn-link text-muted recommendation-info" data-bs-toggle="tooltip" title="Recommendations are based on your usage patterns, popular snippets, and trending languages">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="row recommendation-slider">
+                        {% for snippet in recommended_snippets %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 recommendation-item">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="recommendation-reason">
+                                        {% if loop.index <= 3 %}
+                                        <span class="badge rounded-pill bg-info">Recently Added</span>
+                                        {% elif loop.index <= 5 %}
+                                        <span class="badge rounded-pill bg-primary">Popular Language</span>
+                                        {% else %}
+                                        <span class="badge rounded-pill bg-success">Trending Tags</span>
+                                        {% endif %}
+                                    </div>
+                                    <span class="badge language-badge">{{ snippet.language }}</span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title">{{ snippet.title }}</h6>
+                                    <p class="card-text small text-muted flex-grow-1">
+                                        {{ snippet.description|truncate(60) if snippet.description else "No description provided" }}
+                                    </p>
+                                    <div class="mt-2">
+                                        {% if snippet.tags %}
+                                            {% for tag in snippet.tags.split(',')[:3] %}
+                                            <span class="tag-badge small">{{ tag.strip() }}</span>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{{ url_for('view_snippet', snippet_id=snippet.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- AI Generator -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-cpu"></i> AI Code Generator
+                    </h5>
+                    <p class="text-muted small">Describe what you need and our AI will generate code for you</p>
+                    
+                    <div class="generate-prompt">
+                        <form id="generateForm">
+                            <div class="mb-3">
+                                <label for="promptInput" class="form-label">Describe what you need</label>
+                                <textarea id="promptInput" class="form-control" rows="2" placeholder="e.g. Create a function to calculate Fibonacci sequence in Python"></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="languageSelect" class="form-label">Preferred language (optional)</label>
+                                        <select id="languageSelect" class="form-select">
+                                            <option value="">Any language</option>
+                                            <option value="python">Python</option>
+                                            <option value="javascript">JavaScript</option>
+                                            <option value="java">Java</option>
+                                            <option value="csharp">C#</option>
+                                            <option value="cpp">C++</option>
+                                            <option value="php">PHP</option>
+                                            <option value="ruby">Ruby</option>
+                                            <option value="go">Go</option>
+                                            <option value="rust">Rust</option>
+                                            <option value="swift">Swift</option>
+                                            <option value="typescript">TypeScript</option>
+                                            <option value="sql">SQL</option>
+                                            <option value="html">HTML</option>
+                                            <option value="css">CSS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            <span>Context awareness</span>
+                                            <i class="bi bi-info-circle ms-2" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Enables the AI to consider your existing code patterns and preferences"></i>
+                                        </label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="contextAwarenessToggle" checked>
+                                            <label class="form-check-label" for="contextAwarenessToggle">Use my code patterns</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 context-panel" id="contextPanel">
+                                <label for="contextInput" class="form-label">Additional context (optional)</label>
+                                <textarea id="contextInput" class="form-control" rows="2" 
+                                          placeholder="Provide additional context about your project or specific requirements"></textarea>
+                                          
+                                <div class="mt-2" id="relatedSnippetsSection" style="display: none;">
+                                    <label class="form-label">Related snippets:</label>
+                                    <div id="relatedSnippetsList" class="d-flex flex-wrap gap-2">
+                                        <!-- Related snippets will be added here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-magic"></i> Generate Code
+                                    </button>
+                                    <button type="button" id="quickGenBtn" class="btn btn-outline-primary ms-2">
+                                        <i class="bi bi-lightning"></i> Quick Generate
+                                    </button>
+                                </div>
+                                <button type="button" id="randomPromptBtn" class="btn btn-outline-secondary">
+                                    <i class="bi bi-shuffle"></i> Random Idea
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Quick Generation Modal -->
+                    <div class="modal fade" id="quickGenModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Quick Code Generation</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Select a template to quickly generate code:</p>
+                                    
+                                    <div class="list-group">
+                                        <button type="button" class="list-group-item list-group-item-action quick-template" 
+                                                data-prompt="Create a function that validates email addresses" 
+                                                data-language="javascript">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Email Validator</span>
+                                                <span class="badge bg-primary">JavaScript</span>
+                                            </div>
+                                            <small class="text-muted">Function to validate email format with regex</small>
+                                        </button>
+                                        
+                                        <button type="button" class="list-group-item list-group-item-action quick-template" 
+                                                data-prompt="Create a decorator for measuring function execution time" 
+                                                data-language="python">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Performance Timer</span>
+                                                <span class="badge bg-primary">Python</span>
+                                            </div>
+                                            <small class="text-muted">Decorator that measures and logs function execution time</small>
+                                        </button>
+                                        
+                                        <button type="button" class="list-group-item list-group-item-action quick-template" 
+                                                data-prompt="Create a RESTful API endpoint with error handling" 
+                                                data-language="nodejs">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>REST API Endpoint</span>
+                                                <span class="badge bg-primary">Node.js</span>
+                                            </div>
+                                            <small class="text-muted">Express route with proper error handling and validation</small>
+                                        </button>
+                                        
+                                        <button type="button" class="list-group-item list-group-item-action quick-template" 
+                                                data-prompt="Create a responsive CSS grid layout system" 
+                                                data-language="css">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Responsive Grid</span>
+                                                <span class="badge bg-primary">CSS</span>
+                                            </div>
+                                            <small class="text-muted">Flexible grid system with breakpoints for responsive design</small>
+                                        </button>
+                                        
+                                        <button type="button" class="list-group-item list-group-item-action quick-template" 
+                                                data-prompt="Create a SQL query to find duplicate records with a solution to remove them" 
+                                                data-language="sql">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Find & Remove Duplicates</span>
+                                                <span class="badge bg-primary">SQL</span>
+                                            </div>
+                                            <small class="text-muted">SQL query to identify and safely remove duplicate records</small>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Generated Result (hidden initially) -->
+                    <div id="generatedResult" class="d-none">
+                        <hr>
+                        <h6>Generated Result</h6>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <span class="badge bg-primary" id="resultLanguage">python</span>
+                                    <span class="text-muted small" id="resultTitle">Fibonacci Sequence Generator</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-2" id="saveGeneratedBtn">
+                                        <i class="bi bi-bookmark-plus"></i> Save to Library
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="dismissResultBtn">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="snippet-preview" id="generatedCodePreview">
+                                # Code will appear here
+                            </div>
+                            <div class="mt-2 small text-muted" id="resultDescription">
+                                Description will appear here
+                            </div>
+                            <div class="mt-2">
+                                <span class="text-muted small">Tags: </span>
+                                <span id="resultTags">algorithm, math, sequence</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading indicator -->
+                    <div id="generatingIndicator" class="text-center py-4 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 animate-pulse">Generating your code...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="search-filters">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="searchInput" class="form-label">Search snippets</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by title, description, code or tags">
+                            <button class="btn btn-outline-primary" type="button" id="searchBtn">Search</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Filter by language</label>
+                        <div id="languageFilters">
+                            <span class="language-filter active" data-language="">All</span>
+                            {% for language in languages %}
+                            <span class="language-filter" data-language="{{ language }}">{{ language }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if all_tags %}
+                <div class="mt-3">
+                    <label class="form-label">Filter by tags</label>
+                    <div>
+                        {% for tag in all_tags %}
+                        <span class="tag-badge" data-tag="{{ tag }}">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Snippets Grid -->
+    <div class="row" id="snippetsGrid">
+        {% if snippets %}
+            {% for snippet in snippets %}
+            <div class="col-md-6 col-lg-4 mb-4 snippet-item">
+                <div class="card snippet-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">{{ snippet.title }}</h6>
+                        <span class="badge bg-primary language-badge">{{ snippet.language }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="snippet-description">
+                            <p>{{ snippet.description|truncate(100) }}</p>
+                        </div>
+                        <div class="snippet-preview">{{ snippet.code|truncate(200) }}</div>
+                        <div class="mt-3">
+                            {% if snippet.tags %}
+                                {% for tag in snippet.tags.split(',') %}
+                                <span class="tag-badge">{{ tag.strip() }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="snippet-meta mt-3">
+                            Added {{ snippet.created_at.strftime('%Y-%m-%d') }}
+                            {% if snippet.updated_at != snippet.created_at %}
+                            • Updated {{ snippet.updated_at.strftime('%Y-%m-%d') }}
+                            {% endif %}
+                        </div>
+                        <div class="snippet-actions mt-3">
+                            <a href="{{ url_for('view_snippet', snippet_id=snippet.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <a href="{{ url_for('edit_snippet', snippet_id=snippet.id) }}" class="btn btn-sm btn-outline-secondary ms-2">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="no-snippets">
+                    <i class="bi bi-code-square"></i>
+                    <h5>No snippets found</h5>
+                    <p class="text-muted">Start by creating a new snippet or generating one with AI</p>
+                    <a href="{{ url_for('new_snippet') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg"></i> Create Your First Snippet
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Random prompt ideas
+        const randomPrompts = [
+            "Create a Python function to reverse a string",
+            "Write a JavaScript function to fetch data from an API using async/await",
+            "Generate a SQL query to find the top 10 customers by purchase amount",
+            "Create a CSS animation for a button that pulses when hovered",
+            "Write a Java method to sort an array of integers using merge sort",
+            "Create a Python function to calculate the Fibonacci sequence",
+            "Make a responsive navigation menu with HTML and CSS",
+            "Write a TypeScript interface for a user profile object",
+            "Create a Go function to read and parse a CSV file",
+            "Write a Ruby class for a simple bank account with deposit and withdraw methods",
+            "Create a React component for a modal dialog",
+            "Write a PHP function to connect to a MySQL database",
+            "Create a C# method to encrypt and decrypt a string",
+            "Make a Python script to resize and optimize images in a directory"
+        ];
+
+        // Handle random prompt button
+        const randomPromptBtn = document.getElementById('randomPromptBtn');
+        const promptInput = document.getElementById('promptInput');
+        
+        if (randomPromptBtn && promptInput) {
+            randomPromptBtn.addEventListener('click', function() {
+                const randomIndex = Math.floor(Math.random() * randomPrompts.length);
+                promptInput.value = randomPrompts[randomIndex];
+            });
+        }
+        
+        // Generate Code form handling
+        const generateForm = document.getElementById('generateForm');
+        const promptInput = document.getElementById('promptInput');
+        const contextInput = document.getElementById('contextInput');
+        const contextPanel = document.getElementById('contextPanel');
+        const contextToggle = document.getElementById('contextAwarenessToggle');
+        const languageSelect = document.getElementById('languageSelect');
+        const quickGenBtn = document.getElementById('quickGenBtn');
+        const quickGenModal = new bootstrap.Modal(document.getElementById('quickGenModal'));
+        const generatingIndicator = document.getElementById('generatingIndicator');
+        const generatedResult = document.getElementById('generatedResult');
+        const dismissResultBtn = document.getElementById('dismissResultBtn');
+        const saveGeneratedBtn = document.getElementById('saveGeneratedBtn');
+        const relatedSnippetsSection = document.getElementById('relatedSnippetsSection');
+        const relatedSnippetsList = document.getElementById('relatedSnippetsList');
+        
+        // Result fields
+        const resultLanguage = document.getElementById('resultLanguage');
+        const resultTitle = document.getElementById('resultTitle');
+        const generatedCodePreview = document.getElementById('generatedCodePreview');
+        const resultDescription = document.getElementById('resultDescription');
+        const resultTags = document.getElementById('resultTags');
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Context awareness toggle
+        if (contextToggle) {
+            contextToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    contextPanel.style.display = 'block';
+                } else {
+                    contextPanel.style.display = 'none';
+                }
+            });
+        }
+        
+        // Function to find related snippets based on prompt
+        function findRelatedSnippets(prompt) {
+            // Only perform search if context awareness is enabled
+            if (!contextToggle.checked) return;
+            
+            // Make sure prompt is at least 10 characters
+            if (prompt.length < 10) return;
+            
+            // Search for related snippets based on the prompt
+            fetch(`/api/snippets/search?query=${encodeURIComponent(prompt)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Only show top 3 related snippets
+                    const relatedSnippets = data.snippets.slice(0, 3);
+                    
+                    if (relatedSnippets.length > 0) {
+                        // Clear previous list
+                        relatedSnippetsList.innerHTML = '';
+                        
+                        // Add snippets to the list
+                        relatedSnippets.forEach(snippet => {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge bg-light text-dark d-flex align-items-center related-snippet-badge';
+                            badge.dataset.id = snippet.id;
+                            badge.innerHTML = `
+                                <span>${snippet.title}</span>
+                                <button type="button" class="btn-close btn-close-sm ms-2" aria-label="Remove"></button>
+                            `;
+                            
+                            // Add event listener for removing badge
+                            badge.querySelector('.btn-close').addEventListener('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                badge.remove();
+                                
+                                // Hide section if no badges left
+                                if (relatedSnippetsList.children.length === 0) {
+                                    relatedSnippetsSection.style.display = 'none';
+                                }
+                            });
+                            
+                            relatedSnippetsList.appendChild(badge);
+                        });
+                        
+                        // Show the related snippets section
+                        relatedSnippetsSection.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error finding related snippets:', error);
+                });
+        }
+        
+        // Find related snippets when prompt input changes (with debounce)
+        let debounceTimeout;
+        if (promptInput) {
+            promptInput.addEventListener('input', function() {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    findRelatedSnippets(this.value.trim());
+                }, 500);
+            });
+        }
+        
+        // Handle Quick Generate button click
+        if (quickGenBtn) {
+            quickGenBtn.addEventListener('click', function() {
+                quickGenModal.show();
+            });
+        }
+        
+        // Handle quick templates selection
+        const quickTemplates = document.querySelectorAll('.quick-template');
+        quickTemplates.forEach(template => {
+            template.addEventListener('click', function() {
+                const prompt = this.dataset.prompt;
+                const language = this.dataset.language;
+                
+                // Fill the form with template data
+                promptInput.value = prompt;
+                
+                // Set language if it's in the dropdown
+                const languageOption = Array.from(languageSelect.options).find(option => option.value === language);
+                if (languageOption) {
+                    languageSelect.value = language;
+                }
+                
+                // Close the modal
+                quickGenModal.hide();
+                
+                // Auto-submit the form
+                generateCode();
+            });
+        });
+        
+        // Function to get related snippet IDs
+        function getRelatedSnippetIds() {
+            const badges = relatedSnippetsList.querySelectorAll('.related-snippet-badge');
+            return Array.from(badges).map(badge => badge.dataset.id);
+        }
+        
+        // Function to generate code
+        function generateCode() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                alert('Please enter a description of what you need');
+                return;
+            }
+            
+            // Show loading indicator
+            generatingIndicator.classList.remove('d-none');
+            generatedResult.classList.add('d-none');
+            
+            // Prepare request data with context awareness
+            const requestData = {
+                prompt: prompt,
+                language: languageSelect.value
+            };
+            
+            // Add context awareness data if enabled
+            if (contextToggle.checked) {
+                requestData.context = contextInput.value.trim();
+                requestData.related_snippets = getRelatedSnippetIds();
+            }
+            
+            // Make API request to generate code
+            fetch('/api/snippets/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading indicator
+                generatingIndicator.classList.add('d-none');
+                
+                if (data.error) {
+                    alert('Error generating code: ' + data.error);
+                    return;
+                }
+                
+                // Show the generated result
+                generatedResult.classList.remove('d-none');
+                
+                // Populate fields
+                const snippet = data.snippet;
+                resultLanguage.textContent = snippet.language;
+                resultTitle.textContent = snippet.title;
+                generatedCodePreview.textContent = snippet.code;
+                resultDescription.textContent = snippet.description;
+                resultTags.textContent = snippet.tags;
+                
+                // Store the generated snippet in a variable for saving
+                generateForm.dataset.snippet = JSON.stringify(snippet);
+                
+                // Scroll to the result
+                generatedResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            })
+            .catch(error => {
+                generatingIndicator.classList.add('d-none');
+                alert('Error: ' + error);
+            });
+        }
+        
+        // Form submission handler
+        if (generateForm) {
+            generateForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateCode();
+            });
+        }
+        
+        // Handle dismiss result button
+        if (dismissResultBtn) {
+            dismissResultBtn.addEventListener('click', function() {
+                generatedResult.classList.add('d-none');
+            });
+        }
+        
+        // Handle save to library button
+        if (saveGeneratedBtn) {
+            saveGeneratedBtn.addEventListener('click', function() {
+                const snippetData = JSON.parse(generateForm.dataset.snippet || '{}');
+                
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('title', snippetData.title);
+                formData.append('description', snippetData.description);
+                formData.append('code', snippetData.code);
+                formData.append('language', snippetData.language);
+                formData.append('tags', snippetData.tags);
+                
+                // Submit via POST to create a new snippet
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/snippets/new';
+                
+                for (const [key, value] of formData.entries()) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
+        
+        // Handle search and filters
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const snippetsGrid = document.getElementById('snippetsGrid');
+        const languageFilters = document.querySelectorAll('.language-filter');
+        const tagBadges = document.querySelectorAll('.tag-badge');
+        
+        let activeLanguage = '';
+        let activeTag = '';
+        
+        // Language filter functionality
+        languageFilters.forEach(filter => {
+            filter.addEventListener('click', function() {
+                // Remove active class from all filters
+                languageFilters.forEach(f => f.classList.remove('active'));
+                
+                // Add active class to clicked filter
+                this.classList.add('active');
+                
+                // Update active language
+                activeLanguage = this.dataset.language;
+                
+                // Perform search
+                performSearch();
+            });
+        });
+        
+        // Tag filter functionality
+        tagBadges.forEach(tag => {
+            tag.addEventListener('click', function() {
+                // Toggle active status on clicked tag
+                if (activeTag === this.dataset.tag) {
+                    activeTag = '';
+                    this.style.backgroundColor = '';
+                } else {
+                    // Reset all tags
+                    tagBadges.forEach(t => t.style.backgroundColor = '');
+                    
+                    // Set active tag
+                    activeTag = this.dataset.tag;
+                    this.style.backgroundColor = 'rgba(124, 77, 255, 0.3)';
+                }
+                
+                // Perform search
+                performSearch();
+            });
+        });
+        
+        // Search button click handler
+        if (searchBtn) {
+            searchBtn.addEventListener('click', performSearch);
+        }
+        
+        // Search input enter key handler
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        }
+        
+        // Function to perform search
+        function performSearch() {
+            const query = searchInput ? searchInput.value : '';
+            
+            // Make API request to search snippets
+            fetch(`/api/snippets/search?query=${encodeURIComponent(query)}&language=${encodeURIComponent(activeLanguage)}&tag=${encodeURIComponent(activeTag)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the grid with search results
+                    updateSnippetsGrid(data.snippets);
+                })
+                .catch(error => {
+                    console.error('Error searching snippets:', error);
+                });
+        }
+        
+        // Function to update snippets grid with search results
+        function updateSnippetsGrid(snippets) {
+            if (!snippetsGrid) return;
+            
+            if (snippets.length === 0) {
+                snippetsGrid.innerHTML = `
+                    <div class="col-12">
+                        <div class="no-snippets">
+                            <i class="bi bi-search"></i>
+                            <h5>No matching snippets found</h5>
+                            <p class="text-muted">Try adjusting your search criteria</p>
+                            <button class="btn btn-outline-secondary" onclick="window.location.reload()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Clear the grid
+            snippetsGrid.innerHTML = '';
+            
+            // Add snippets to the grid
+            snippets.forEach(snippet => {
+                const tags = snippet.tags.map(tag => 
+                    `<span class="tag-badge">${tag}</span>`
+                ).join('');
+                
+                const createdDate = new Date(snippet.created_at).toLocaleDateString();
+                const updatedDate = new Date(snippet.updated_at).toLocaleDateString();
+                
+                const updatedText = createdDate !== updatedDate 
+                    ? `• Updated ${updatedDate}` 
+                    : '';
+                
+                const snippetElement = document.createElement('div');
+                snippetElement.className = 'col-md-6 col-lg-4 mb-4 snippet-item';
+                snippetElement.innerHTML = `
+                    <div class="card snippet-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">${snippet.title}</h6>
+                            <span class="badge bg-primary language-badge">${snippet.language}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="snippet-description">
+                                <p>${snippet.description.length > 100 ? snippet.description.substring(0, 100) + '...' : snippet.description}</p>
+                            </div>
+                            <div class="snippet-preview">${snippet.code.length > 200 ? snippet.code.substring(0, 200) + '...' : snippet.code}</div>
+                            <div class="mt-3">
+                                ${tags}
+                            </div>
+                            <div class="snippet-meta mt-3">
+                                Added ${createdDate} ${updatedText}
+                            </div>
+                            <div class="snippet-actions mt-3">
+                                <a href="/snippets/${snippet.id}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <a href="/snippets/${snippet.id}/edit" class="btn btn-sm btn-outline-secondary ms-2">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                snippetsGrid.appendChild(snippetElement);
+            });
+        }
+    });
+</script>
+{% endblock %}
